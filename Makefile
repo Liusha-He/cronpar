@@ -18,8 +18,8 @@ format:
 	poetry run isort --line-length 120 cronpar
 
 lint:
-	poetry run black --preview .
+	poetry run black .
 	poetry run isort .
-	poetry run flakehell lint .
+	poetry run flake8 .
 
 PHONY: init compile build test format lint
