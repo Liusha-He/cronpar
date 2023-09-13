@@ -12,6 +12,7 @@ jobs:
       matrix:
         python-version: [3.9]
         poetry-version: [1.2.1]
+        poetry-core-version: [1.2.0]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,4 +26,5 @@ jobs:
           PUBLISH_REGISTRY_PASSWORD: ${{ secrets.PYPI_TOKEN }}
           PYTHON_VERSION: ${{ matrix.python-version }}
           POETRY_VERSION: ${{ matrix.poetry-version }}
+          POETRY_CORE_VERSION: ${{ matrix.poetry-core-version }}
           BRANCH: main
