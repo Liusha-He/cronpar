@@ -25,3 +25,4 @@ jobs:
           PUBLISH_REGISTRY_PASSWORD: ${{ secrets.PYPI_TOKEN }}
           PYTHON_VERSION: ${{ matrix.python-version }}
           POETRY_VERSION: ${{ matrix.poetry-version }}
+          BRANCH: main
