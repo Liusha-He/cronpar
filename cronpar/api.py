@@ -2,7 +2,6 @@ import calendar
 from datetime import datetime
 
 TODAY = datetime.today()
-
 DEFAULT_OUTCOME = {
     "minute": list(range(0, 60)),
     "hour": list(range(0, 24)),
