@@ -37,6 +37,7 @@ jobs:
         continue-on-error: true
         run: >
           git tag -l | grep v${{ env.VERSION }} || exit 1
+
 #      - name: Push tag if none exists
 #        if: ${{ steps.check-tag-exists.outcome == 'failure' }}
 #        uses: actions/github-script@v4
