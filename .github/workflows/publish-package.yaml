@@ -1,9 +1,9 @@
 name: Build and Publish cronpar
 
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - main
 
 jobs:
   publish:
@@ -15,17 +15,44 @@ jobs:
         poetry-core-version: [1.2.0]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       id-token: write
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Publish PyPi package
-        uses: code-specialist/pypi-poetry-publish@v1
         with:
-          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUBLISH_REGISTRY_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-          PYTHON_VERSION: ${{ matrix.python-version }}
-          POETRY_VERSION: ${{ matrix.poetry-version }}
-          POETRY_CORE_VERSION: ${{ matrix.poetry-core-version }}
-          BRANCH: main
+          fetch-depth: 0
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ matrix.poetry-version }}
+      - name: Get version
+        run: echo "VERSION=$(poetry version | cut -d ' ' -f2)" >> $GITHUB_ENV
+      - name: Check tag exists
+        id: check-tag-exists
+        continue-on-error: true
+        run: >
+          git tag -l | grep v${{ env.VERSION }} || exit 1
+      - name: Push tag if none exists
+        if: ${{ steps.check-tag-exists.outcome == 'failure' }}
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs')
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/v${{ env.VERSION }}`,
+              sha: context.sha
+            })
+      - name: Build and publish GCP
+        if: ${{ steps.gcp-artifact-version-exists.outcome == 'failure' }}
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+          poetry publish --build
