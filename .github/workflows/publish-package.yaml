@@ -1,9 +1,9 @@
-name: Publish cronpar
+name: Build and Publish cronpar
 
 on:
   release:
     types:
-      - created
+      - published
 
 jobs:
   publish:
@@ -12,21 +12,16 @@ jobs:
       matrix:
         python-version: [3.9]
         poetry-version: [1.2.1]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - name: Publish PyPi package
+        uses: code-specialist/pypi-poetry-publish@v1
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Run image
-        uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: ${{ matrix.poetry-version }}
-      - name: Publish
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          poetry config pypi-token.pypi $PYPI_TOKEN
-          poetry publish --build
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_REGISTRY_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          PYTHON_VERSION: ${{ matrix.python-version }}
+          POETRY_VERSION: ${{ matrix.poetry-version }}
