@@ -52,7 +52,6 @@ jobs:
 #              sha: context.sha
 #            })
       - name: Build and publish
-        if: ${{ steps.gcp-artifact-version-exists.outcome == 'failure' }}
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
           poetry publish --build
