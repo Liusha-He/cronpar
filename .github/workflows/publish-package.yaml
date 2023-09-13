@@ -37,19 +37,20 @@ jobs:
         continue-on-error: true
         run: >
           git tag -l | grep v${{ env.VERSION }} || exit 1
-      - name: Push tag if none exists
-        if: ${{ steps.check-tag-exists.outcome == 'failure' }}
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs')
-            github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: `refs/tags/v${{ env.VERSION }}`,
-              sha: context.sha
-            })
+
+#      - name: Push tag if none exists
+#        if: ${{ steps.check-tag-exists.outcome == 'failure' }}
+#        uses: actions/github-script@v4
+#        with:
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          script: |
+#            const fs = require('fs')
+#            github.git.createRef({
+#              owner: context.repo.owner,
+#              repo: context.repo.repo,
+#              ref: `refs/tags/v${{ env.VERSION }}`,
+#              sha: context.sha
+#            })
       - name: Build and publish
         if: ${{ steps.gcp-artifact-version-exists.outcome == 'failure' }}
         run: |
