@@ -12,10 +12,9 @@ jobs:
       matrix:
         python-version: [3.9]
         poetry-version: [1.2.1]
-        poetry-core-version: [1.2.0]
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - name: checkout
@@ -51,7 +50,7 @@ jobs:
               ref: `refs/tags/v${{ env.VERSION }}`,
               sha: context.sha
             })
-      - name: Build and publish GCP
+      - name: Build and publish
         if: ${{ steps.gcp-artifact-version-exists.outcome == 'failure' }}
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
